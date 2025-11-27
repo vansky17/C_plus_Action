@@ -17,7 +17,10 @@ class C_PLUS_ACTION_API AVanCharacter : public ACharacter
 public:
 	// Sets default values for this character's properties
 	AVanCharacter();
-
+protected:
+	
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AActor> ProjectileClass;
 protected:
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* SpringArmComp;
@@ -27,6 +30,8 @@ protected:
 	virtual void BeginPlay() override;
 	void MoveForward(float Value);
 	void MoveRight(float Value);
+	void LookUp(float Value);
+	void PrimaryAttack();
 
 public:	
 	// Called every frame
