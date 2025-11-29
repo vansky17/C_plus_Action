@@ -63,18 +63,32 @@ void AVanCharacter::Tick(float DeltaTime)
 
 void AVanCharacter::PrimaryAttack()
 {
-	FVector MuzzleLocation = GetMesh()->GetSocketLocation("Muzzle_01"); // hand location
-	
+	if (!ProjectileClass) return;
+
+	// ----- AIMING DIRECTION -----
+	// Use camera forward vector to determine the direction of fire
 	FVector ShotDirection = CameraComp->GetForwardVector();
 	FRotator ShotRotation = ShotDirection.Rotation();
 
-	FTransform SpawnTM(ShotRotation, MuzzleLocation);
+	// ----- SPAWN LOCATION -----
+	// Spawn from the hand socket instead of camera
+	FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
+
+	// Push it slightly forward so it doesn't intersect player capsule
+	FVector SpawnLocation = HandLocation + ShotDirection * 20.f;
 
 	FActorSpawnParameters Params;
 	Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, Params);
+	// ---- SPAWN ----
+	GetWorld()->SpawnActor<AActor>(
+		ProjectileClass,
+		SpawnLocation,
+		ShotRotation,
+		Params
+	);
 }
+
 
 // Called to bind functionality to input
 void AVanCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
